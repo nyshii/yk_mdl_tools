@@ -1,3 +1,10 @@
+import numpy
+import re
+import os
+import json
+import bpy
+from bpy.types import Operator
+from bpy.types import Panel
 bl_info = {
     'name': 'Yakuza Model Tools',
     'author': 'notyoshi',
@@ -7,10 +14,6 @@ bl_info = {
     'version': (0, 0, 1),
     'blender': (3, 2, 0),
 }
-
-import bpy, json, os, re, numpy, ast
-from bpy.types import Panel
-from bpy.types import Operator
 
 
 ## hide flagged meshes ##
@@ -28,7 +31,8 @@ def hide_flagged_meshes(context, modelname, modelflags, mode):
 
         for x in sub_parts:
             def sub_parts_func(key):
-                key = sub_parts[str(inc)][list(sub_parts[str(inc)].keys())[0]][str(key)]
+                key = sub_parts[str(inc)][list(
+                    sub_parts[str(inc)].keys())[0]][str(key)]
                 return key
 
             if inc != sub_parts['ROW_COUNT']:
@@ -36,21 +40,21 @@ def hide_flagged_meshes(context, modelname, modelflags, mode):
                     sub_parts_func("prefix")
                 except:
                     parts.append('null')
-                    part_flags.append([0,0,0,0])
+                    part_flags.append([0, 0, 0, 0])
                     inc += 1
                 else:
                     parts.append(sub_parts_func("prefix"))
-                    sub_parts_flags = [int(sub_parts_func("use_hair")), #0
-                                       int(sub_parts_func("use_face")), #1
-                                       int(sub_parts_func("use_tops")), #2
-                                       int(sub_parts_func("use_btms")) #3
+                    sub_parts_flags = [int(sub_parts_func("use_hair")),  # 0
+                                       int(sub_parts_func("use_face")),  # 1
+                                       int(sub_parts_func("use_tops")),  # 2
+                                       int(sub_parts_func("use_btms"))  # 3
                                        ]
                     part_flags.append(sub_parts_flags)
                     inc += 1
 
         while len(parts) != 64:
             parts.append('null')
-            part_flags.append([0,0,0,0])
+            part_flags.append([0, 0, 0, 0])
 
         parts.reverse()
         part_flags.reverse()
@@ -66,7 +70,6 @@ def hide_flagged_meshes(context, modelname, modelflags, mode):
 
         partspartsparts = parts(context)[0]
         partsflags = parts(context)[1]
-
 
         # filter the parts
         for x in partspartsparts:
@@ -86,7 +89,8 @@ def hide_flagged_meshes(context, modelname, modelflags, mode):
             helpme = 0
             for i in filter_list:
                 helpme -= 1
-                regex_test = "(?:\[.*?\])+((ns_|sw_)?(sw_|ns_)?" + re.escape(i) + ").*|^((ns_|sw_)?(sw_|ns_)?" + re.escape(i) + ").*"
+                regex_test = "(?:\[.*?\])+((ns_|sw_)?(sw_|ns_)?" + re.escape(i) + \
+                    ").*|^((ns_|sw_)?(sw_|ns_)?" + re.escape(i) + ").*"
                 if not re.search(regex_test, mesh_object.name):
                     helpme += 1
 
@@ -100,10 +104,17 @@ def hide_flagged_meshes(context, modelname, modelflags, mode):
 
 ## Load models from db ##
 
-def load_models_from_db(context):
-    modeldata = "character_parts_model_data.bin.json" if context.scene.yakuza6 else "character_model_model_data.bin.json"
 
-    with open(context.scene.db_folder + modeldata) as json_file:
+def load_models_from_db(context):
+    modeldata = os.path.join(context.scene.db_folder,
+                         "character_model_model_data.bin.json")
+    if not os.path.exists(modeldata):
+        modeldata = modeldata.replace("character_model", "character_parts")
+        if not os.path.exists(modeldata):
+            print("Model data file not found.")
+            return
+
+    with open(model_data) as json_file:
         model_data = json.load(json_file)
 
     entry = 0
@@ -112,7 +123,8 @@ def load_models_from_db(context):
 
     while not state:
         try:
-            entry = model_data['subTable'][str(i)][context.scene.modelname]['2']
+            entry = model_data['subTable'][str(
+                i)][context.scene.modelname]['2']
         except:
             if i != len(model_data['subTable']):
                 i += 1
@@ -127,10 +139,14 @@ def load_models_from_db(context):
     tops_flag = numpy.int64(model_data[str(entry)]['']['tops_flags'])
     btms_flag = numpy.int64(model_data[str(entry)]['']['btms_flags'])
 
-    face = str(model_data[str(entry)]['']['face_model']) if 'face_model' in model_data[str(entry)][''] else ''
-    hair = str(model_data[str(entry)]['']['hair_model']) if 'hair_model' in model_data[str(entry)][''] else ''
-    tops = str(model_data[str(entry)]['']['tops_model']) if 'tops_model' in model_data[str(entry)][''] else ''
-    btms = str(model_data[str(entry)]['']['btms_model']) if 'btms_model' in model_data[str(entry)][''] else ''
+    face = str(model_data[str(entry)]['']['face_model']
+               ) if 'face_model' in model_data[str(entry)][''] else ''
+    hair = str(model_data[str(entry)]['']['hair_model']
+               ) if 'hair_model' in model_data[str(entry)][''] else ''
+    tops = str(model_data[str(entry)]['']['tops_model']
+               ) if 'tops_model' in model_data[str(entry)][''] else ''
+    btms = str(model_data[str(entry)]['']['btms_model']
+               ) if 'btms_model' in model_data[str(entry)][''] else ''
 
     if face != '':
         bpy.ops.import_scene.gmd_skinned(files=[{"name": face + ".gmd"}],
@@ -151,6 +167,7 @@ def load_models_from_db(context):
                                          directory=context.scene.chara_folder + '\\btms\\' + btms + "\\")
         hide_flagged_meshes(context, btms, btms_flag, 3)
 
+
 class YKMDL_OP_loadmodelfromdb(Operator):
     bl_idname = "ykmdl.load_model_from_db"
     bl_label = "Load Model(s) from DB"
@@ -164,11 +181,14 @@ class YKMDL_OP_loadmodelfromdb(Operator):
         return {'FINISHED'}
 
 ## remove LOD meshes ##
+
+
 def remove_lod_meshes(context):
     for ob in bpy.context.scene.objects:
         x = re.search("(\[l1).*|(\[l2).*|(\[l3).*", ob.name)
         if x is not None:
             bpy.data.objects.remove(ob, do_unlink=True)
+
 
 class YKMDL_OP_removelodmeshes(bpy.types.Operator):
     bl_idname = "ykmdl.remove_lod_meshes"
@@ -182,6 +202,8 @@ class YKMDL_OP_removelodmeshes(bpy.types.Operator):
 ## menu crap ##
 
 # filepath declaration #
+
+
 class YKMDL_OP_menu(Panel):
     bl_idname = "ykmdl.menu"
     bl_label = "Menu"
@@ -208,25 +230,27 @@ class YKMDL_OP_menu(Panel):
         prop_split(col, context.scene, "png_folder", "Textures folder")
         prop_split(col, context.scene, "modelname", "Model name in DB")
         prop_split(col, context.scene, "hideflagged", "Hide flagged meshes")
-        prop_split(col, context.scene, "yakuza6", "Yakuza 6")
         col.operator(YKMDL_OP_loadmodelfromdb.bl_idname)
         col.operator(YKMDL_OP_removelodmeshes.bl_idname)
 
 ## boring shit ##
 
+
 def register():
     bpy.types.Scene.db_folder = bpy.props.StringProperty(name="db folder",
-                                                                          subtype="FILE_PATH")
+                                                         subtype="FILE_PATH")
 
-    bpy.types.Scene.chara_folder = bpy.props.StringProperty(name="chara folder", subtype="FILE_PATH")
+    bpy.types.Scene.chara_folder = bpy.props.StringProperty(
+        name="chara folder", subtype="FILE_PATH")
 
     bpy.types.Scene.modelname = bpy.props.StringProperty(name="model name")
 
-    bpy.types.Scene.png_folder = bpy.props.StringProperty(name="png_folder", subtype="FILE_PATH")
+    bpy.types.Scene.png_folder = bpy.props.StringProperty(
+        name="png_folder", subtype="FILE_PATH")
 
-    bpy.types.Scene.yakuza6 = bpy.props.BoolProperty(name="Yakuza 6")
-    bpy.types.Scene.hideflagged = bpy.props.BoolProperty(name="Hide flagged meshes", default=True)
-    
+    bpy.types.Scene.hideflagged = bpy.props.BoolProperty(
+        name="Hide flagged meshes", default=True)
+
     bpy.utils.register_class(YKMDL_OP_removelodmeshes)
     bpy.utils.register_class(YKMDL_OP_loadmodelfromdb)
     bpy.utils.register_class(YKMDL_OP_menu)

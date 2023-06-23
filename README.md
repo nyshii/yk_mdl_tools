@@ -27,3 +27,4 @@ Press "Delete LOD meshes" to delete meshes that start with [l1], [l2], and [l3] 
 
 ## CREDITS
 [Ret-HZ for reARMP](https://github.com/Ret-HZ/reARMP)
+Timo654 for cleaning up my messy code...

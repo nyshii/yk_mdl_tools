@@ -2,7 +2,7 @@ import numpy
 import re
 import os
 import json
-from reARMP import exportFile
+from .reARMP import exportFile
 from collections import OrderedDict
 import bpy
 from bpy.types import Operator

@@ -31,3 +31,6 @@ Turning off "Hide flagged meshes" will make it so that flagged meshes are not hi
 Turn on "Yakuza 6" if you are importing from Yakuza 6.
 
 Press "Delete LOD meshes" to delete meshes that start with [l1], [l2], and [l3] (LOD models).
+
+## Credits
+[Ret-HZ for reARMP](https://github.com/Ret-HZ/reARMP)

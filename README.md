@@ -5,7 +5,7 @@ A Blender addon that reads models from character_model_model_data.bin and import
 Currently, it does not read tex_change_table or gets dedit colors.
 
 ## HOW TO INSTALL
-Just download yk_mdl_tools.py from this repository and install it in Blender. (Preferences > Add-ons > Install)
+Just download this repository as a ZIP (Code > Download ZIP) and install it in Blender. (Preferences > Add-ons > Install)
 
 ## PREREQUISITES
 - [ParManager](https://github.com/Kaplas80/ParManager) (to extract the .PAR files)

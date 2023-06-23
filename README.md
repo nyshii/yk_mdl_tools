@@ -9,10 +9,6 @@ Just download yk_mdl_tools.py from this repository and install it in Blender. (P
 ## PREREQUISITES
 - [ParManager](https://github.com/Kaplas80/ParManager) (to extract the .PAR files)
 - [yk_gmd_io](https://github.com/theturboturnip/yk_gmd_io/releases/) (for importing the .GMDs)
-- [reARMP](https://github.com/Ret-HZ/reARMP), to then *manually* convert the following .bin files to .json:
-	-   character_model_model_data.bin 
-		- (For Yakuza 6, character_parts_model_data.bin)
-	 - character_sub_parts_type.bin
 
 
 ## USAGE
@@ -24,11 +20,9 @@ The chara folder is where the folders like tops, btms, etc. are located. (e.g. `
 
 The textures folder is where all the textures are stored (e.g. `C:\Program Files (x86)\Steam\steamapps\common\Yakuza Like a Dragon\runtime\media\data\chara.par.unpack\dds`) . I recommend converting the .dds textures in `chara.par/dds` to .png as Blender cannot read BC7 textures yet.
 
-The model name in DB is the name of the model from character_model_model_data.bin (or character_parts_model_data.bin) you wish to import. (e.g. `c_em_ichiban`)
+The model name in DB is the name of the model from character_model_model_data.bin (or character_parts_model_data.bin in Yakuza 6) you wish to import. (e.g. `c_em_ichiban`)
 
 Turning off "Hide flagged meshes" will make it so that flagged meshes are not hidden when imported.
-
-Turn on "Yakuza 6" if you are importing from Yakuza 6.
 
 Press "Delete LOD meshes" to delete meshes that start with [l1], [l2], and [l3] (LOD models).
 
